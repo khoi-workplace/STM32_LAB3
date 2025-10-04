@@ -198,46 +198,66 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, LED_RED_0_Pin|LED_AMBER_0_Pin|LED_GREEN_0_Pin|LED_RED_1_Pin
-                          |LED_AMBER_1_Pin|LED_GREEN_1_Pin|SEG_A_0_Pin|SEG_B_0_Pin
-                          |SEG_C_0_Pin|SEG_D_0_Pin|SEG_E_0_Pin|SEG_F_0_Pin
-                          |SEG_G_0_Pin|SEG_A_1_Pin|SEG_B_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, SEG_E_3_Pin|SEG_F_3_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, SEG_C_1_Pin|SEG_D_1_Pin|SEG_E_1_Pin|SEG_F_1_Pin
-                          |SEG_G_1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, SEG_G_3_Pin|LED_RED_0_Pin|LED_AMBER_0_Pin|LED_GREEN_0_Pin
+                          |LED_RED_1_Pin|LED_AMBER_1_Pin|LED_GREEN_1_Pin|SEG_A_0_Pin
+                          |SEG_B_0_Pin|SEG_C_0_Pin|SEG_D_0_Pin|SEG_E_0_Pin
+                          |SEG_F_0_Pin|SEG_G_0_Pin|SEG_A_1_Pin|SEG_B_1_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : BUTTON_Pin */
-  GPIO_InitStruct.Pin = BUTTON_Pin;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, SEG_C_1_Pin|SEG_D_1_Pin|SEG_E_1_Pin|SEG_F_2_Pin
+                          |SEG_G_2_Pin|SEG_A_3_Pin|SEG_B_3_Pin|SEG_C_3_Pin
+                          |SEG_D_3_Pin|SEG_F_1_Pin|SEG_G_1_Pin|SEG_A_2_Pin
+                          |SEG_B_2_Pin|SEG_C_2_Pin|SEG_D_2_Pin|SEG_E_2_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : BUTTON1_Pin BUTTON2_Pin BUTTON3_Pin */
+  GPIO_InitStruct.Pin = BUTTON1_Pin|BUTTON2_Pin|BUTTON3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(BUTTON_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : LED_RED_0_Pin LED_AMBER_0_Pin LED_GREEN_0_Pin LED_RED_1_Pin
-                           LED_AMBER_1_Pin LED_GREEN_1_Pin SEG_A_0_Pin SEG_B_0_Pin
-                           SEG_C_0_Pin SEG_D_0_Pin SEG_E_0_Pin SEG_F_0_Pin
-                           SEG_G_0_Pin SEG_A_1_Pin SEG_B_1_Pin */
-  GPIO_InitStruct.Pin = LED_RED_0_Pin|LED_AMBER_0_Pin|LED_GREEN_0_Pin|LED_RED_1_Pin
-                          |LED_AMBER_1_Pin|LED_GREEN_1_Pin|SEG_A_0_Pin|SEG_B_0_Pin
-                          |SEG_C_0_Pin|SEG_D_0_Pin|SEG_E_0_Pin|SEG_F_0_Pin
-                          |SEG_G_0_Pin|SEG_A_1_Pin|SEG_B_1_Pin;
+  /*Configure GPIO pins : SEG_E_3_Pin SEG_F_3_Pin */
+  GPIO_InitStruct.Pin = SEG_E_3_Pin|SEG_F_3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : SEG_G_3_Pin LED_RED_0_Pin LED_AMBER_0_Pin LED_GREEN_0_Pin
+                           LED_RED_1_Pin LED_AMBER_1_Pin LED_GREEN_1_Pin SEG_A_0_Pin
+                           SEG_B_0_Pin SEG_C_0_Pin SEG_D_0_Pin SEG_E_0_Pin
+                           SEG_F_0_Pin SEG_G_0_Pin SEG_A_1_Pin SEG_B_1_Pin */
+  GPIO_InitStruct.Pin = SEG_G_3_Pin|LED_RED_0_Pin|LED_AMBER_0_Pin|LED_GREEN_0_Pin
+                          |LED_RED_1_Pin|LED_AMBER_1_Pin|LED_GREEN_1_Pin|SEG_A_0_Pin
+                          |SEG_B_0_Pin|SEG_C_0_Pin|SEG_D_0_Pin|SEG_E_0_Pin
+                          |SEG_F_0_Pin|SEG_G_0_Pin|SEG_A_1_Pin|SEG_B_1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : SEG_C_1_Pin SEG_D_1_Pin SEG_E_1_Pin SEG_F_1_Pin
-                           SEG_G_1_Pin */
-  GPIO_InitStruct.Pin = SEG_C_1_Pin|SEG_D_1_Pin|SEG_E_1_Pin|SEG_F_1_Pin
-                          |SEG_G_1_Pin;
+  /*Configure GPIO pins : SEG_C_1_Pin SEG_D_1_Pin SEG_E_1_Pin SEG_F_2_Pin
+                           SEG_G_2_Pin SEG_A_3_Pin SEG_B_3_Pin SEG_C_3_Pin
+                           SEG_D_3_Pin SEG_F_1_Pin SEG_G_1_Pin SEG_A_2_Pin
+                           SEG_B_2_Pin SEG_C_2_Pin SEG_D_2_Pin SEG_E_2_Pin */
+  GPIO_InitStruct.Pin = SEG_C_1_Pin|SEG_D_1_Pin|SEG_E_1_Pin|SEG_F_2_Pin
+                          |SEG_G_2_Pin|SEG_A_3_Pin|SEG_B_3_Pin|SEG_C_3_Pin
+                          |SEG_D_3_Pin|SEG_F_1_Pin|SEG_G_1_Pin|SEG_A_2_Pin
+                          |SEG_B_2_Pin|SEG_C_2_Pin|SEG_D_2_Pin|SEG_E_2_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure peripheral I/O remapping */
+  __HAL_AFIO_REMAP_PD01_ENABLE();
 
 }
 
