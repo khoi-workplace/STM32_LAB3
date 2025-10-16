@@ -1,0 +1,4 @@
+timer.c:25:6:setTimer	16	static
+timer.c:32:5:checkTimerFlag	16	static
+timer.c:37:6:timerRun	16	static
+timer.c:46:6:HAL_TIM_PeriodElapsedCallback	16	static

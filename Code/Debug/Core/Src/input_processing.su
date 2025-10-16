@@ -1,0 +1,7 @@
+input_processing.c:39:6:updateLedBuffer_0	16	static
+input_processing.c:44:6:updateLedBuffer_1	16	static
+input_processing.c:49:5:get_red_counter_buffer	4	static
+input_processing.c:53:5:get_amber_counter_buffer	4	static
+input_processing.c:57:5:get_green_counter_buffer	4	static
+input_processing.c:61:6:balanceCounterInMode	16	static
+input_processing.c:93:6:fsm_for_input_processing	8	static

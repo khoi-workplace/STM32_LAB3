@@ -10,11 +10,8 @@
 
 #include "main.h"
 
-#define NORMAL_STATE SET
-#define PRESSED_STATE RESET
-
-extern int button1_flag;
-int isButton1Pressed();
-void getKeyInput();
+void button_reading (void);
+unsigned char is_button_pressed(unsigned char index);
+unsigned char is_button_pressed_1s(unsigned char index);
 
 #endif /* INC_INPUT_READING_H_ */

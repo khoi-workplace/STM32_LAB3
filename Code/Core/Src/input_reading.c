@@ -8,61 +8,58 @@
 #include "main.h"
 #include "input_reading.h"
 
-int KeyReg0 = NORMAL_STATE;
-int KeyReg1 = NORMAL_STATE;
-int KeyReg2 = NORMAL_STATE;
-int KeyReg3 = NORMAL_STATE;
+#define		N0_OF_BUTTONS				4
+#define		DURATION_FOR_AUTO_INCREASE	100
+#define		BUTTON_IS_PRESSED			GPIO_PIN_RESET
+#define		BUTTON_IS_RELEASED			GPIO_PIN_SET
 
-int TimeOutForKeyPress =  500;
-int button1_pressed = 0;
-int button1_long_pressed = 0;
-int button1_flag = 0;
+static GPIO_PinState buttonBuffer[N0_OF_BUTTONS];
+static GPIO_PinState debounceButtonBuffer1[N0_OF_BUTTONS];
+static GPIO_PinState debounceButtonBuffer2[N0_OF_BUTTONS];
 
-int isButton1Pressed(){
-	if(button1_flag == 1){
-		button1_flag = 0;
-		return 1;
+static uint8_t flagForButtonPress1s[N0_OF_BUTTONS];
+static uint16_t counterForButtonPress1s[N0_OF_BUTTONS];
+
+void button_reading(void) {
+	for (Button_t button_id = 0; button_id < N0_OF_BUTTONS; ++button_id) {
+
+		debounceButtonBuffer2[button_id] = debounceButtonBuffer1[button_id];
+
+		switch (button_id) {
+			case 0: debounceButtonBuffer1[button_id] = HAL_GPIO_ReadPin(BUTTON_1_GPIO_Port, BUTTON_1_Pin); break;
+			case 1: debounceButtonBuffer1[button_id] = HAL_GPIO_ReadPin(BUTTON_2_GPIO_Port, BUTTON_2_Pin); break;
+			case 2: debounceButtonBuffer1[button_id] = HAL_GPIO_ReadPin(BUTTON_3_GPIO_Port, BUTTON_3_Pin); break;
+			case 3: debounceButtonBuffer1[button_id] = HAL_GPIO_ReadPin(RESET_BUTTON_GPIO_Port, RESET_BUTTON_Pin); break;
+			default:
+				break;
+		}
+
+		if (debounceButtonBuffer1[button_id] == debounceButtonBuffer2[button_id]) {
+
+			buttonBuffer[button_id] = debounceButtonBuffer1[button_id];
+
+			if (buttonBuffer[button_id] == BUTTON_IS_PRESSED) {
+				if (flagForButtonPress1s[button_id] == 0) {
+					--counterForButtonPress1s[button_id];
+				}
+				if (counterForButtonPress1s[button_id] <= 0) {
+					flagForButtonPress1s[button_id] = 1;
+					counterForButtonPress1s[button_id] = DURATION_FOR_AUTO_INCREASE;
+				}
+			} else { // Reset
+				counterForButtonPress1s[button_id] = DURATION_FOR_AUTO_INCREASE;
+				flagForButtonPress1s[button_id] = 0;
+			}
+		}
 	}
-	return 0;
 }
 
-int isButton1LongPressed(){
-	if(button1_long_pressed == 1){
-		button1_long_pressed = 0;
-		return 1;
-	}
-	return 0;
+unsigned char is_button_pressed(unsigned char index) {
+	if (index >= N0_OF_BUTTONS) return 0;
+	return (buttonBuffer[index] == BUTTON_IS_PRESSED);
 }
 
-void subKeyProcess(){
-	//TODO
-	//HAL_GPIO_TogglePin(LED1_GPIO_Port, LED1_Pin);
-	button1_flag = 1;
-}
-
-void getKeyInput(){
-  KeyReg2 = KeyReg1;
-  KeyReg1 = KeyReg0;
-  // Add your key
-  KeyReg0 = HAL_GPIO_ReadPin(BUTTON_GPIO_Port, BUTTON_Pin);
-
-  if ((KeyReg1 == KeyReg0) && (KeyReg1 == KeyReg2)){
-    if (KeyReg2 != KeyReg3){ // Short press
-      KeyReg3 = KeyReg2;
-
-      if (KeyReg3 == PRESSED_STATE){
-        TimeOutForKeyPress = 500;
-        button1_flag = 1;
-      }
-
-    }else{ // Long press
-       TimeOutForKeyPress--;
-        if (TimeOutForKeyPress == 0) {
-        	TimeOutForKeyPress = 500;
-        	if (KeyReg3 == PRESSED_STATE) {
-        		button1_flag = 1;
-        	}
-        }
-    }
-  }
+unsigned char is_button_pressed_1s(unsigned char index) {
+	if (index >= N0_OF_BUTTONS) return 0;
+	return (flagForButtonPress1s[index] == 1);
 }
