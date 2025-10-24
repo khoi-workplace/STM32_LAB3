@@ -120,7 +120,7 @@ void fsm_for_input_processing(void) {
 
 				mode = (mode + 1) % N0_OF_MODES;
 				if (mode != 0) {
-					updateLedBuffer_0(mode);
+					updateLedBuffer_0(mode + 1); // Actually, mode begin with 1
 					switch (mode) {
 						case MODIFY_RED:
 							updateLedBuffer_1(red_counter_buffer_temp = red_counter_buffer); break;

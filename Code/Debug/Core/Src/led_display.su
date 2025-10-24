@@ -9,4 +9,4 @@ led_display.c:137:6:initState	8	static
 led_display.c:187:6:resetState	8	static
 led_display.c:221:6:trafficCounter	8	static
 led_display.c:313:6:blinkLED	16	static
-led_display.c:334:6:fsm_for_output_processing	8	static
+led_display.c:334:6:outputProcessing	8	static

@@ -331,7 +331,7 @@ void blinkLED(int mode) {
 	}
 }
 
-void fsm_for_output_processing(void) {
+void outputProcessing(void) {
 	  if (checkTimerFlag(6)) { // Blinking DEBUG_LED every 1000 ms
 		  setTimer(6, 1000);
 		  HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);

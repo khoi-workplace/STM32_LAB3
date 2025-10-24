@@ -102,7 +102,7 @@ int main(void)
   {
 //	  process_button_logic();
 	  fsm_for_input_processing();
-	  fsm_for_output_processing();
+	  outputProcessing();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
