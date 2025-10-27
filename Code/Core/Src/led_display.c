@@ -306,6 +306,7 @@ void fsm_for_output_processing(void) {
 	if (mode == NORMAL) { // Normal mode
 	  if (checkTimerFlag(tmr_traffic_clk)) {
 		  resetTimer(tmr_traffic_clk);
+
 		  displayTrafficIdle();
 	  }
 	} else { // Modify mode
@@ -313,16 +314,6 @@ void fsm_for_output_processing(void) {
 		  resetTimer(tmr_blink_mod_led);
 
 		  blinkLED(mode);
-		  updateLedBuffer_0(mode + 1); // Because, actually, normal mode is 1
-		  switch (mode) {
-				case MODIFY_RED:
-					updateLedBuffer_1(red_counter_buffer_temp = red_counter_buffer); break;
-				case MODIFY_AMBER:
-					updateLedBuffer_1(amber_counter_buffer_temp = amber_counter_buffer); break;
-				case MODIFY_GREEN:
-					updateLedBuffer_1(green_counter_buffer_temp = green_counter_buffer); break;
-				default: break;
-		  }
 	  }
 	}
 

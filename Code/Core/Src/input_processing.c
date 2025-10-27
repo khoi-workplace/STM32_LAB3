@@ -118,6 +118,18 @@ void fsm_for_input_processing(void) {
 				}
 
 				mode = (mode + 1) % N0_OF_MODES;
+				if (mode != 0) {
+					updateLedBuffer_0(mode + 1); // Because, actually, normal mode is 1
+					switch (mode) {
+						case MODIFY_RED:
+							updateLedBuffer_1(red_counter_buffer_temp = red_counter_buffer); break;
+						case MODIFY_AMBER:
+							updateLedBuffer_1(amber_counter_buffer_temp = amber_counter_buffer); break;
+						case MODIFY_GREEN:
+							updateLedBuffer_1(green_counter_buffer_temp = green_counter_buffer); break;
+						default: break;
+					}
+				}
 				clearAllLeds();
 			}
 
