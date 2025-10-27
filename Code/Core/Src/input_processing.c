@@ -100,12 +100,12 @@ void fsm_for_input_processing(void) {
 			else button1_toggle_flag = 0;
 			break;
 		case BUTTON_PRESSED:
-			if (checkTimerFlag(2) && !button1_toggle_flag) {
-				setTimer(2, 50);
+			if (checkTimerFlag(tmr_btn_press) && !button1_toggle_flag) {
+				resetTimer(tmr_btn_press);
 				button1_toggle_flag = 1;
 
 				if (mode == N0_OF_MODES - 1) {
-					// Prepare for next NORMAL mode
+					// Prepare for NORMAL mode
 					led0_status = GREEN;
 					led1_status = RED;
 					red_counter_0 = red_counter_buffer;
@@ -114,23 +114,10 @@ void fsm_for_input_processing(void) {
 					amber_counter_1 = amber_counter_buffer;
 					green_counter_0 = green_counter_buffer;
 					green_counter_1 = green_counter_buffer;
-					setTimer(0, 1000);
-					setTimer(1, 1000);
+					resetTimer(tmr_traffic_clk);
 				}
 
 				mode = (mode + 1) % N0_OF_MODES;
-				if (mode != 0) {
-					updateLedBuffer_0(mode + 1); // Actually, mode begin with 1
-					switch (mode) {
-						case MODIFY_RED:
-							updateLedBuffer_1(red_counter_buffer_temp = red_counter_buffer); break;
-						case MODIFY_AMBER:
-							updateLedBuffer_1(amber_counter_buffer_temp = amber_counter_buffer); break;
-						case MODIFY_GREEN:
-							updateLedBuffer_1(green_counter_buffer_temp = green_counter_buffer); break;
-						default: break;
-					}
-				}
 				clearAllLeds();
 			}
 
@@ -156,8 +143,8 @@ void fsm_for_input_processing(void) {
 		case BUTTON_RELEASED:
 			if (is_button_pressed(BUTTON_FOR_MODIFY)) {
 				button2State = BUTTON_PRESSED;
-				if (checkTimerFlag(2) && !button2_toggle_flag) {
-					setTimer(2, 50);
+				if (checkTimerFlag(tmr_btn_press) && !button2_toggle_flag) {
+					resetTimer(tmr_btn_press);
 					button2_toggle_flag = 1; // Ensure increase only one time
 
 					switch (mode) {
@@ -195,8 +182,8 @@ void fsm_for_input_processing(void) {
 				button2State = BUTTON_RELEASED;
 			}
 
-			if (checkTimerFlag(4)) {
-				setTimer(4, 500);
+			if (checkTimerFlag(tmr_btn_hold)) {
+				resetTimer(tmr_btn_hold);
 				switch (mode) {
 					case MODIFY_RED: // Change time duration of red LEDs
 						red_counter_buffer_temp = (red_counter_buffer_temp + 1) % 100;
@@ -226,8 +213,8 @@ void fsm_for_input_processing(void) {
 			else button3_toggle_flag = 0;
 			break;
 		case BUTTON_PRESSED:
-			if (checkTimerFlag(2) && !button3_toggle_flag) {
-				setTimer(2, 50);
+			if (checkTimerFlag(tmr_btn_press) && !button3_toggle_flag) {
+				resetTimer(tmr_btn_press);
 
 				button3_toggle_flag = 1;
 
@@ -265,10 +252,9 @@ void fsm_for_input_processing(void) {
 		default: break;
 	}
 
-	// Input_processing for button 4
-	/*
-	 * Button 4 function:
-	 * - If pressed: in reset mode
+	/* Input_processing for button 4
+	 * + If pressed: 		act as an undo button
+	 * + If long-pressed: 	act as a reset button
 	 * */
 
 	switch (button4State) {
@@ -292,6 +278,11 @@ void fsm_for_input_processing(void) {
 						break;
 					default: break;
 				}
+
+				// Reset all timers
+				for (int i = 0; i < N0_OF_TIMERS; ++i) {
+					resetTimer(i);
+				}
 			}
 			break;
 		case BUTTON_PRESSED:
@@ -300,7 +291,12 @@ void fsm_for_input_processing(void) {
 			} else {
 				if (is_button_pressed_1s(BUTTON_FOR_RESET)) {
 					button4State = BUTTON_PRESSED_MORE_THAN_1S;
-					initState();
+					defaultState();
+
+					// Reset all timers
+					for (int i = 0; i < N0_OF_TIMERS; ++i) {
+						resetTimer(i);
+					}
 				}
 			}
 			break;

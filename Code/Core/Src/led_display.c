@@ -134,7 +134,7 @@ void displayLED_1(int status) {
 	}
 }
 
-void initState(void) {
+void defaultState(void) {
 	mode = NORMAL;
 
 	// RESET: EN0-3
@@ -170,21 +170,9 @@ void initState(void) {
 	red_counter_buffer = DEFAULT_RED_COUNTER;
 	amber_counter_buffer = DEFAULT_AMBER_COUNTER;
 	green_counter_buffer = DEFAULT_GREEN_COUNTER;
-
-	// Reset timers
-	setTimer(0, 1000);
-	setTimer(1, 1000);
-	setTimer(2, 50);
-	setTimer(3, 250);
-	setTimer(4, 500);
-	setTimer(5, 100);
-	setTimer(6, 1000);
-	//  setTimer(7, 10);
-	//  setTimer(8, 10);
-	//  setTimer(9, 10);
 }
 
-void resetState(void) {
+void resetState(void) { // Just in normal mode
 	mode = NORMAL;
 
 	// RESET: EN0-3
@@ -212,139 +200,136 @@ void resetState(void) {
 	HAL_GPIO_WritePin(LED_AMBER_1_GPIO_Port, LED_AMBER_1_Pin, OFF);
 	HAL_GPIO_WritePin(LED_GREEN_1_GPIO_Port, LED_GREEN_1_Pin, OFF);
 	updateLedBuffer_1(red_counter_1);
-
-	// Reset timers
-	setTimer(0, 1000);
-	setTimer(1, 1000);
 }
 
-void trafficCounter(void) {
-	if (checkTimerFlag(0)) {
-		setTimer(0, 1000);
+void displayTrafficIdle(void) {
+	switch (led0_status) {
+		case RED:
+			if (red_counter_0 <= 0) {
+				red_counter_0 = get_red_counter_buffer(); // Reset for next red state
 
-		switch (led0_status) {
-			case RED:
-				if (red_counter_0 <= 0) {
-					red_counter_0 = get_red_counter_buffer(); // Reset for next red state
+				// Setup green state
+				led0_status = GREEN;
 
-					// Setup green state
-					led0_status = GREEN;
+				updateLedBuffer_0(--green_counter_0);
+			} else {
+				updateLedBuffer_0(--red_counter_0);
+			}
+			break;
+		case AMBER:
+			if (amber_counter_0 <= 0) {
+				amber_counter_0 = get_amber_counter_buffer();
+				led0_status = RED;
 
-					updateLedBuffer_0(--green_counter_0);
-				} else {
-					updateLedBuffer_0(--red_counter_0);
-				}
-				break;
-			case AMBER:
-				if (amber_counter_0 <= 0) {
-					amber_counter_0 = get_amber_counter_buffer();
-					led0_status = RED;
+				updateLedBuffer_0(--red_counter_0);
+			} else {
+				updateLedBuffer_0(--amber_counter_0);
+			}
 
-					updateLedBuffer_0(--red_counter_0);
-				} else {
-					updateLedBuffer_0(--amber_counter_0);
-				}
+			break;
+		case GREEN:
+			if (green_counter_0 <= 0) {
+				green_counter_0 = get_green_counter_buffer();
+				led0_status = AMBER;
 
-				break;
-			case GREEN:
-				if (green_counter_0 <= 0) {
-					green_counter_0 = get_green_counter_buffer();
-					led0_status = AMBER;
+				updateLedBuffer_0(--amber_counter_0);
+			} else {
+				updateLedBuffer_0(--green_counter_0);
+			}
 
-					updateLedBuffer_0(--amber_counter_0);
-				} else {
-					updateLedBuffer_0(--green_counter_0);
-				}
-
-				break;
-			default: break;
-		}
-
-		// Display LEDs on direct 0
-		displayLED_0(led0_status);
+			break;
+		default: break;
 	}
 
-	if (checkTimerFlag(1)) {
-		setTimer(1, 1000);
+	switch (led1_status) {
+		case RED:
+			if (red_counter_1 <= 0) {
+				red_counter_1 = get_red_counter_buffer();
+				led1_status = GREEN;
 
-		switch (led1_status) {
-			case RED:
-				if (red_counter_1 <= 0) {
-					red_counter_1 = get_red_counter_buffer();
-					led1_status = GREEN;
+				updateLedBuffer_1(--green_counter_1);
+			} else {
+				updateLedBuffer_1(--red_counter_1);
+			}
 
-					updateLedBuffer_1(--green_counter_1);
-				} else {
-					updateLedBuffer_1(--red_counter_1);
-				}
+			break;
+		case AMBER:
+			if (amber_counter_1 <= 0) {
+				amber_counter_1 = get_amber_counter_buffer();
+				led1_status = RED;
 
-				break;
-			case AMBER:
-				if (amber_counter_1 <= 0) {
-					amber_counter_1 = get_amber_counter_buffer();
-					led1_status = RED;
+				updateLedBuffer_1(--red_counter_1);
 
-					updateLedBuffer_1(--red_counter_1);
+			} else {
+				updateLedBuffer_1(--amber_counter_1);
+			}
 
-				} else {
-					updateLedBuffer_1(--amber_counter_1);
-				}
+			break;
+		case GREEN:
+			if (green_counter_1 <= 0) {
+				green_counter_1 = get_green_counter_buffer();
+				led1_status = AMBER;
 
-				break;
-			case GREEN:
-				if (green_counter_1 <= 0) {
-					green_counter_1 = get_green_counter_buffer();
-					led1_status = AMBER;
+				updateLedBuffer_1(--amber_counter_1);
+			} else {
+				updateLedBuffer_1(--green_counter_1);
+			}
 
-					updateLedBuffer_1(--amber_counter_1);
-				} else {
-					updateLedBuffer_1(--green_counter_1);
-				}
-
-				break;
-			default: break;
-		}
-
-		// Display LEDs on direct 1
-		displayLED_1(led1_status);
+			break;
+		default: break;
 	}
+
+	// Display LEDs
+	displayLED_0(led0_status);
+	displayLED_1(led1_status);
 }
 
 void blinkLED(int mode) {
-	if (checkTimerFlag(5)) {
-		setTimer(5, 500);
-		switch (mode) {
-			case MODIFY_RED:
-				HAL_GPIO_TogglePin(LED_RED_0_GPIO_Port, LED_RED_0_Pin);
-				HAL_GPIO_TogglePin(LED_RED_1_GPIO_Port, LED_RED_1_Pin);
-				break;
-			case MODIFY_AMBER:
-				HAL_GPIO_TogglePin(LED_AMBER_0_GPIO_Port, LED_AMBER_0_Pin);
-				HAL_GPIO_TogglePin(LED_AMBER_1_GPIO_Port, LED_AMBER_1_Pin);
-				break;
-			case MODIFY_GREEN:
-				HAL_GPIO_TogglePin(LED_GREEN_0_GPIO_Port, LED_GREEN_0_Pin);
-				HAL_GPIO_TogglePin(LED_GREEN_1_GPIO_Port, LED_GREEN_1_Pin);
-				break;
-			default: break;
-		}
+	switch (mode) {
+		case MODIFY_RED:
+			HAL_GPIO_TogglePin(LED_RED_0_GPIO_Port, LED_RED_0_Pin);
+			HAL_GPIO_TogglePin(LED_RED_1_GPIO_Port, LED_RED_1_Pin);
+			break;
+		case MODIFY_AMBER:
+			HAL_GPIO_TogglePin(LED_AMBER_0_GPIO_Port, LED_AMBER_0_Pin);
+			HAL_GPIO_TogglePin(LED_AMBER_1_GPIO_Port, LED_AMBER_1_Pin);
+			break;
+		case MODIFY_GREEN:
+			HAL_GPIO_TogglePin(LED_GREEN_0_GPIO_Port, LED_GREEN_0_Pin);
+			HAL_GPIO_TogglePin(LED_GREEN_1_GPIO_Port, LED_GREEN_1_Pin);
+			break;
+		default: break;
 	}
 }
 
-void outputProcessing(void) {
-	  if (checkTimerFlag(6)) { // Blinking DEBUG_LED every 1000 ms
-		  setTimer(6, 1000);
-		  HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
+void fsm_for_output_processing(void) {
+	if (mode == NORMAL) { // Normal mode
+	  if (checkTimerFlag(tmr_traffic_clk)) {
+		  resetTimer(tmr_traffic_clk);
+		  displayTrafficIdle();
 	  }
+	} else { // Modify mode
+	  if (checkTimerFlag(tmr_blink_mod_led)) {
+		  resetTimer(tmr_blink_mod_led);
 
-	  if (mode == NORMAL) {
-		  trafficCounter();
-	  } else {
-		  blinkLED(mode); // Blink LEDs - with counter is being modifying - every 500 ms
+		  blinkLED(mode);
+		  updateLedBuffer_0(mode + 1); // Because, actually, normal mode is 1
+		  switch (mode) {
+				case MODIFY_RED:
+					updateLedBuffer_1(red_counter_buffer_temp = red_counter_buffer); break;
+				case MODIFY_AMBER:
+					updateLedBuffer_1(amber_counter_buffer_temp = amber_counter_buffer); break;
+				case MODIFY_GREEN:
+					updateLedBuffer_1(green_counter_buffer_temp = green_counter_buffer); break;
+				default: break;
+		  }
 	  }
+	}
 
-	  if (checkTimerFlag(3)) {
-		setTimer(3, 125);
+	// Display 7SEG_LEDs
+	if (checkTimerFlag(tmr_seg_scan)) {
+		resetTimer(tmr_seg_scan);
+
 		update7SEG_0(led_index);
 		update7SEG_1(led_index);
 

@@ -18,27 +18,44 @@
  * Timer 6 : for blinky DEBUG_LED
  */
 
-int timer_counter[N0_OF_TIMERS];
-int timer_flag[N0_OF_TIMERS];
+typedef struct {
+	int base_counter;
+	int counter;
+	int flag;
+} TIMER_t;
+
+TIMER_t timerList[N0_OF_TIMERS];
 int TIMER_CYCLE = 10;
 
-void setTimer(int index, int duration) {
-	if (index >= N0_OF_TIMERS) return;
-
-	timer_counter[index] = duration / TIMER_CYCLE;
-	timer_flag[index] = 0;
+void updateTimerCycle(int prescaler, int period, int clk) {
+	TIMER_CYCLE = ((prescaler + 1) * (period + 1) * 1000) / clk;
 }
 
-int checkTimerFlag(int index) {
-	if (index >= N0_OF_TIMERS) return 0;
-	return (timer_flag[index] == 1);
+void setTimer(int id, int duration) {
+	if (id >= N0_OF_TIMERS) return;
+
+	timerList[id].base_counter = duration / TIMER_CYCLE;
+	resetTimer(id);
+}
+
+void resetTimer(int id) {
+	if (id >= N0_OF_TIMERS) return;
+
+	timerList[id].counter = timerList[id].base_counter;
+	timerList[id].flag = 0;
+}
+
+int checkTimerFlag(int id) {
+	if (id >= N0_OF_TIMERS) return 0;
+
+	return (timerList[id].flag == 1);
 }
 
 void timerRun() {
 	for (int i = 0; i < N0_OF_TIMERS; ++i) {
-		if (timer_counter[i] > 0) {
-			--timer_counter[i];
-			if (timer_counter[i] == 0) timer_flag[i] = 1;
+		if (timerList[i].counter > 0) {
+			--timerList[i].counter;
+			if (timerList[i].counter == 0) timerList[i].flag = 1;
 		}
 	}
 }

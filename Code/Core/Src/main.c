@@ -93,16 +93,27 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Base_Start_IT(&htim2);
 
-  initState();
+  defaultState();
+  updateTimerCycle(htim2.Init.Prescaler, htim2.Init.Period, 8000000);
+  setTimer(tmr_blink_mod_led, 500);
+  setTimer(tmr_blink_red_led, 1000);
+  setTimer(tmr_btn_hold, 500);
+  setTimer(tmr_btn_press, 300);
+  setTimer(tmr_seg_scan, 250);
+  setTimer(tmr_traffic_clk, 1000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-//	  process_button_logic();
-	  fsm_for_input_processing();
-	  outputProcessing();
+		if (checkTimerFlag(tmr_blink_red_led)) { // Blinking DEBUG_LED every 1000 ms
+		  resetTimer(tmr_blink_red_led);
+		  HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
+		}
+
+		fsm_for_input_processing();
+		fsm_for_output_processing();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

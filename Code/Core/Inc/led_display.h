@@ -38,11 +38,11 @@ void displayLED_0(int index);
 // Functions for LEDs on direction 1
 void displayLED_1(int index);
 
-void trafficCounter(void);
+void displayTrafficIdle(void);
 void blinkLED(int mode);
 void clearAllLeds(void);
-void initState(void);
+void defaultState(void);
 void resetState(void);
-void outputProcessing(void);
+void fsm_for_output_processing(void);
 
 #endif /* INC_LED_DISPLAY_H_ */
