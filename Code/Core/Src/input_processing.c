@@ -24,9 +24,10 @@ ButtonState_t button4State = BUTTON_RELEASED;
 int led_buffer_0[2] = {0, 0};
 int led_buffer_1[2] = {0, 0};
 
-int N0_OF_MODES = 4;
+int N0_OF_MODES = 5;
 
-int mode = NORMAL;
+int mode = AUTOMATIC;
+int free_dir = 0; // Use in manual mode to know which direct needs to free
 
 int red_counter_buffer = DEFAULT_RED_COUNTER;
 int amber_counter_buffer = DEFAULT_AMBER_COUNTER;
@@ -103,24 +104,12 @@ void fsm_for_input_processing(void) {
 			if (checkTimerFlag(tmr_btn_press) && !button1_toggle_flag) {
 				resetTimer(tmr_btn_press);
 				button1_toggle_flag = 1;
-
-				if (mode == N0_OF_MODES - 1) {
-					// Prepare for NORMAL mode
-					led0_status = GREEN;
-					led1_status = RED;
-					red_counter_0 = red_counter_buffer;
-					red_counter_1 = red_counter_buffer;
-					amber_counter_0 = amber_counter_buffer;
-					amber_counter_1 = amber_counter_buffer;
-					green_counter_0 = green_counter_buffer;
-					green_counter_1 = green_counter_buffer;
-					resetTimer(tmr_traffic_clk);
+				if (mode == 0) { // Prepare resources before switching to manual mode
+					free_dir = 0;
 				}
-
-				mode = (mode + 1) % N0_OF_MODES;
-				if (mode != 0) {
-					updateLedBuffer_0(mode + 1); // Because, actually, normal mode is 1
-					switch (mode) {
+				else if (mode > 0 && mode < N0_OF_MODES - 1) { // Prepare resources before switching to modify modes
+					updateLedBuffer_0(mode + 1);
+					switch (mode + 1) {
 						case MODIFY_RED:
 							updateLedBuffer_1(red_counter_buffer_temp = red_counter_buffer); break;
 						case MODIFY_AMBER:
@@ -130,6 +119,19 @@ void fsm_for_input_processing(void) {
 						default: break;
 					}
 				}
+				else if (mode == N0_OF_MODES - 1) { // Prepare resources before switching to automatic mode
+					resetTimer(tmr_traffic_clk);
+					led0_status = GREEN; 	// Set initial status of led0
+					led1_status = RED;		// Set initial status of led1
+					red_counter_0 = red_counter_buffer;
+					red_counter_1 = red_counter_buffer;
+					amber_counter_0 = amber_counter_buffer;
+					amber_counter_1 = amber_counter_buffer;
+					green_counter_0 = green_counter_buffer;
+					green_counter_1 = green_counter_buffer;
+				}
+
+				mode = (mode + 1) % N0_OF_MODES;
 				clearAllLeds();
 			}
 
@@ -160,6 +162,10 @@ void fsm_for_input_processing(void) {
 					button2_toggle_flag = 1; // Ensure increase only one time
 
 					switch (mode) {
+						case MANUAL:
+							free_dir = (free_dir + 1) % 2;
+							clearAllLeds();
+							break;
 						case MODIFY_RED: // Change time duration of red LEDs
 							red_counter_buffer_temp = (red_counter_buffer_temp + 1) % 100;
 							updateLedBuffer_1(red_counter_buffer_temp);
@@ -231,17 +237,20 @@ void fsm_for_input_processing(void) {
 				button3_toggle_flag = 1;
 
 				switch (mode) {
+					case MANUAL:
+						mode = AUTOMATIC;
+						break;
 					case MODIFY_RED:
 						red_counter_buffer = red_counter_buffer_temp;
-						balanceCounterInMode(1);
+						balanceCounterInMode(mode);
 						break;
 					case MODIFY_AMBER:
 						amber_counter_buffer = amber_counter_buffer_temp;
-						balanceCounterInMode(2);
+						balanceCounterInMode(mode);
 						break;
 					case MODIFY_GREEN:
 						green_counter_buffer = green_counter_buffer_temp;
-						balanceCounterInMode(3);
+						balanceCounterInMode(mode);
 						break;
 					default: break;
 				}
@@ -274,7 +283,7 @@ void fsm_for_input_processing(void) {
 			if (is_button_pressed(BUTTON_FOR_RESET)) {
 				button4State = BUTTON_PRESSED;
 				switch (mode) {
-					case NORMAL:
+					case AUTOMATIC:
 						resetState();
 					case MODIFY_RED:
 						red_counter_buffer_temp = red_counter_buffer;

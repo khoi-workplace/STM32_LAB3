@@ -135,7 +135,7 @@ void displayLED_1(int status) {
 }
 
 void defaultState(void) {
-	mode = NORMAL;
+	mode = AUTOMATIC;
 
 	// RESET: EN0-3
 	HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, OFF);
@@ -173,7 +173,7 @@ void defaultState(void) {
 }
 
 void resetState(void) { // Just in normal mode
-	mode = NORMAL;
+	mode = AUTOMATIC;
 
 	// RESET: EN0-3
 	HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, OFF);
@@ -303,27 +303,40 @@ void blinkLED(int mode) {
 }
 
 void fsm_for_output_processing(void) {
-	if (mode == NORMAL) { // Normal mode
-	  if (checkTimerFlag(tmr_traffic_clk)) {
-		  resetTimer(tmr_traffic_clk);
-
-		  displayTrafficIdle();
-	  }
-	} else { // Modify mode
-	  if (checkTimerFlag(tmr_blink_mod_led)) {
-		  resetTimer(tmr_blink_mod_led);
-
-		  blinkLED(mode);
-	  }
+	switch (mode) {
+		case AUTOMATIC:
+			if (checkTimerFlag(tmr_traffic_clk)) {
+				resetTimer(tmr_traffic_clk);
+				displayTrafficIdle();
+			}
+			break;
+		case MANUAL:
+			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, OFF);
+			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, OFF);
+			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, OFF);
+			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, OFF);
+			if (free_dir == 0) { // Use free_dir to allow extend project to traffic lights more than 2 directions
+				HAL_GPIO_WritePin(LED_GREEN_0_GPIO_Port, LED_GREEN_0_Pin, RESET);
+				HAL_GPIO_WritePin(LED_RED_1_GPIO_Port, LED_RED_1_Pin, RESET);
+			} else {
+				HAL_GPIO_WritePin(LED_GREEN_1_GPIO_Port, LED_GREEN_1_Pin, RESET);
+				HAL_GPIO_WritePin(LED_RED_0_GPIO_Port, LED_RED_0_Pin, RESET);
+			}
+			break;
+		case MODIFY_RED: case MODIFY_AMBER: case MODIFY_GREEN:
+			if (checkTimerFlag(tmr_blink_mod_led)) {
+				resetTimer(tmr_blink_mod_led);
+				blinkLED(mode);
+			}
+			break;
+		default: break;
 	}
 
 	// Display 7SEG_LEDs
-	if (checkTimerFlag(tmr_seg_scan)) {
+	if (checkTimerFlag(tmr_seg_scan) && mode != MANUAL) {
 		resetTimer(tmr_seg_scan);
-
 		update7SEG_0(led_index);
 		update7SEG_1(led_index);
-
 		led_index = (led_index + 1) % N0_OF_SEG_PER_DIR; // Ensure led_index < N0_SEG_PER_DIR
 	}
 }

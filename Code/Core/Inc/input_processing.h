@@ -13,13 +13,15 @@
 #define	DEFAULT_GREEN_COUNTER	3
 
 typedef enum MODE{
-	NORMAL,
+	AUTOMATIC,
+	MANUAL,
 	MODIFY_RED,
 	MODIFY_AMBER,
 	MODIFY_GREEN
 } MODE_t;
 
 extern int mode;
+extern int free_dir;
 extern int red_counter_buffer;
 extern int amber_counter_buffer;
 extern int green_counter_buffer;
