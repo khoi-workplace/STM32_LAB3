@@ -76,6 +76,7 @@ void balanceCounterInMode(int mode) {
 			}
 			break;
 		default:
+			return;
 			break;
 	}
 
@@ -242,18 +243,18 @@ void fsm_for_input_processing(void) {
 						break;
 					case MODIFY_RED:
 						red_counter_buffer = red_counter_buffer_temp;
-						balanceCounterInMode(mode);
 						break;
 					case MODIFY_AMBER:
 						amber_counter_buffer = amber_counter_buffer_temp;
-						balanceCounterInMode(mode);
+//						balanceCounterInMode(mode);
 						break;
 					case MODIFY_GREEN:
 						green_counter_buffer = green_counter_buffer_temp;
-						balanceCounterInMode(mode);
+//						balanceCounterInMode(mode);
 						break;
 					default: break;
 				}
+				balanceCounterInMode(mode);
 			}
 
 			// Change state
@@ -287,15 +288,15 @@ void fsm_for_input_processing(void) {
 						resetState();
 					case MODIFY_RED:
 						red_counter_buffer_temp = red_counter_buffer;
-						updateLedBuffer_1(red_counter_buffer_temp);
+						updateLedBuffer_1(red_counter_buffer_temp - 1);
 						break;
 					case MODIFY_AMBER:
 						amber_counter_buffer_temp = amber_counter_buffer;
-						updateLedBuffer_1(amber_counter_buffer_temp);
+						updateLedBuffer_1(amber_counter_buffer_temp - 1);
 						break;
 					case MODIFY_GREEN:
 						green_counter_buffer_temp = green_counter_buffer;
-						updateLedBuffer_1(green_counter_buffer_temp);
+						updateLedBuffer_1(green_counter_buffer_temp - 1);
 						break;
 					default: break;
 				}

@@ -4,4 +4,4 @@ input_processing.c:50:5:get_red_counter_buffer	4	static
 input_processing.c:54:5:get_amber_counter_buffer	4	static
 input_processing.c:58:5:get_green_counter_buffer	4	static
 input_processing.c:62:6:balanceCounterInMode	16	static
-input_processing.c:94:6:fsm_for_input_processing	16	static
+input_processing.c:95:6:fsm_for_input_processing	16	static
