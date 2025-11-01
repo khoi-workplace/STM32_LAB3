@@ -27,7 +27,7 @@ typedef struct {
 TIMER_t timerList[N0_OF_TIMERS];
 int TIMER_CYCLE = 10;
 
-void updateTimerCycle(int prescaler, int period, int clk) {
+void updateTimerCycle(int prescaler, int period, int clk) { // Ensure tick every 10ms
 	TIMER_CYCLE = ((prescaler + 1) * (period + 1) * 1000) / clk;
 }
 

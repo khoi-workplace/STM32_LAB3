@@ -113,7 +113,7 @@ int main(void)
 		}
 
 		fsm_for_input_processing();
-		fsm_for_output_processing();
+		output_processing();
 
     /* USER CODE END WHILE */
 

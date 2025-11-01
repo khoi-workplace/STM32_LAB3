@@ -43,6 +43,6 @@ void blinkLED(int mode);
 void clearAllLeds(void);
 void defaultState(void);
 void resetState(void);
-void fsm_for_output_processing(void);
+void output_processing(void);
 
 #endif /* INC_LED_DISPLAY_H_ */

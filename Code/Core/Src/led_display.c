@@ -219,24 +219,28 @@ void displayTrafficIdle(void) {
 		case AMBER:
 			if (amber_counter_0 <= 0) {
 				amber_counter_0 = get_amber_counter_buffer();
+
 				led0_status = RED;
 
 				updateLedBuffer_0(--red_counter_0);
 			} else {
 				updateLedBuffer_0(--amber_counter_0);
 			}
-
 			break;
 		case GREEN:
 			if (green_counter_0 <= 0) {
 				green_counter_0 = get_green_counter_buffer();
-				led0_status = AMBER;
 
-				updateLedBuffer_0(--amber_counter_0);
+				if (get_amber_counter_buffer() != 0) {
+					led0_status = AMBER;
+					updateLedBuffer_0(--amber_counter_0);
+				} else {
+					led0_status = RED;
+					updateLedBuffer_0(--red_counter_0);
+				}
 			} else {
 				updateLedBuffer_0(--green_counter_0);
 			}
-
 			break;
 		default: break;
 	}
@@ -268,9 +272,14 @@ void displayTrafficIdle(void) {
 		case GREEN:
 			if (green_counter_1 <= 0) {
 				green_counter_1 = get_green_counter_buffer();
-				led1_status = AMBER;
 
-				updateLedBuffer_1(--amber_counter_1);
+				if (get_amber_counter_buffer() != 0) {
+					led1_status = AMBER;
+					updateLedBuffer_1(--amber_counter_1);
+				} else {
+					led1_status = RED;
+					updateLedBuffer_1(--red_counter_1);
+				}
 			} else {
 				updateLedBuffer_1(--green_counter_1);
 			}
@@ -302,7 +311,7 @@ void blinkLED(int mode) {
 	}
 }
 
-void fsm_for_output_processing(void) {
+void output_processing(void) {
 	switch (mode) {
 		case AUTOMATIC:
 			if (checkTimerFlag(tmr_traffic_clk)) {

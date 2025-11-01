@@ -29,22 +29,28 @@ int N0_OF_MODES = 5;
 int mode = AUTOMATIC;
 int free_dir = 0; // Use in manual mode to know which direct needs to free
 
-int red_counter_buffer = DEFAULT_RED_COUNTER;
+int red_counter_buffer = DEFAULT_RED_COUNTER; // Counter buffer that led_counter in led_display will get
 int amber_counter_buffer = DEFAULT_AMBER_COUNTER;
 int green_counter_buffer = DEFAULT_GREEN_COUNTER;
 
-int red_counter_buffer_temp = DEFAULT_RED_COUNTER;
+int red_counter_buffer_temp = DEFAULT_RED_COUNTER; // Use when increase the counter but not confirm yet
 int amber_counter_buffer_temp = DEFAULT_AMBER_COUNTER;
 int green_counter_buffer_temp = DEFAULT_GREEN_COUNTER;
 
 void updateLedBuffer_0(int num) {
 	led_buffer_0[0] = num / 10;
 	led_buffer_0[1] = num % 10;
+
+	if (led_buffer_0[0] < 0) led_buffer_0[0] = 0;
+	if (led_buffer_0[1] < 0) led_buffer_0[1] = 0;
 }
 
 void updateLedBuffer_1(int num) {
 	led_buffer_1[0] = num / 10;
 	led_buffer_1[1] = num % 10;
+
+	if (led_buffer_1[0] < 0) led_buffer_1[0] = 0;
+	if (led_buffer_1[1] < 0) led_buffer_1[1] = 0;
 }
 
 int get_red_counter_buffer(void) {
@@ -164,7 +170,7 @@ void fsm_for_input_processing(void) {
 
 					switch (mode) {
 						case MANUAL:
-							free_dir = (free_dir + 1) % 2; // Ensure to extend project with more than 2 dir
+							free_dir = (free_dir + 1) % 2; // Ensure to extend project with more than 2 dir in future
 							clearAllLeds();
 							break;
 						case MODIFY_RED: // Change time duration of red LEDs

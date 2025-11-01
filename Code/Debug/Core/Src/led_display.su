@@ -8,5 +8,5 @@ led_display.c:121:6:displayLED_1	16	static
 led_display.c:137:6:defaultState	8	static
 led_display.c:175:6:resetState	8	static
 led_display.c:205:6:displayTrafficIdle	8	static
-led_display.c:287:6:blinkLED	16	static
-led_display.c:305:6:fsm_for_output_processing	8	static
+led_display.c:296:6:blinkLED	16	static
+led_display.c:314:6:output_processing	8	static
