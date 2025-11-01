@@ -311,11 +311,13 @@ void fsm_for_output_processing(void) {
 			}
 			break;
 		case MANUAL:
+			// Turn off all 7seg_leds
 			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, OFF);
 			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, OFF);
 			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, OFF);
 			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, OFF);
-			if (free_dir == 0) { // Use free_dir to allow extend project to traffic lights more than 2 directions
+
+			if (free_dir == 0) {
 				HAL_GPIO_WritePin(LED_GREEN_0_GPIO_Port, LED_GREEN_0_Pin, RESET);
 				HAL_GPIO_WritePin(LED_RED_1_GPIO_Port, LED_RED_1_Pin, RESET);
 			} else {

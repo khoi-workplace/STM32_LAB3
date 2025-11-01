@@ -164,7 +164,7 @@ void fsm_for_input_processing(void) {
 
 					switch (mode) {
 						case MANUAL:
-							free_dir = (free_dir + 1) % 2;
+							free_dir = (free_dir + 1) % 2; // Ensure to extend project with more than 2 dir
 							clearAllLeds();
 							break;
 						case MODIFY_RED: // Change time duration of red LEDs
@@ -246,11 +246,9 @@ void fsm_for_input_processing(void) {
 						break;
 					case MODIFY_AMBER:
 						amber_counter_buffer = amber_counter_buffer_temp;
-//						balanceCounterInMode(mode);
 						break;
 					case MODIFY_GREEN:
 						green_counter_buffer = green_counter_buffer_temp;
-//						balanceCounterInMode(mode);
 						break;
 					default: break;
 				}
